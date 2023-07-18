@@ -59,7 +59,6 @@ bool addNextCaptureMoveIfPossible(CaptureCollection *previousCaptures, Position 
     bool noCapturesPossible = tryAllDirectionsForCapture(previousCaptures, position, pieceType);
 
     if (noCapturesPossible) {
-//        TODO: include pawn
         savePositionAndCaptures(previousCaptures, position, pieceType);
         return false;
     }

@@ -23,7 +23,6 @@ bool isAlreadyCaptured(CaptureCollection previousCaptures, Position position) {
 }
 
 void initCaptureIfNull(CaptureCollection **captures, PieceType pieceType) {
-//    TODO: fixme
     if (*captures == NULL) {
         *captures = pieceType == QUEEN ?
                 &(playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captured[playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].size]) :
