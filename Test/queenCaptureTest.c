@@ -46,7 +46,6 @@ void shouldYield2QueenCaptureMovesWith2CapturesEach() {
 void shouldYield3QueenCaptureMovesWith1Capture() {
     currentPlayer = BLACK;
     read_board(board, queenSingleCaptureMultipleCaptureMovesTestBoardPath);
-//    showBoard(board);
 
     initPlayerMoves();
     generatePlayerMoves();
