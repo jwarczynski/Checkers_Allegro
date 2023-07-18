@@ -12,7 +12,7 @@
  *
  *      By Michael Rickmann.
  *
- *      Native build version by Henrik Stokseth.
+ *      Native bin version by Henrik Stokseth.
  *
  *      See readme.txt for copyright information.
  */

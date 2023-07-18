@@ -18,7 +18,7 @@
 
 /*
 #ifdef ALLEGRO_SRC
-   #error Currently BCC32 cannot build the library
+   #error Currently BCC32 cannot bin the library
 #endif
 */
 
