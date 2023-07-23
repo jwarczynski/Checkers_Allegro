@@ -37,22 +37,22 @@ void generateMovesByType(Position position) {
 void deallocatePlayerMovesMemory() {
     for (int i = 0; i < playerMoves.queenCaptureMovesAllocatedSize; i++) {
         for (int j = 0; j < playerMoves.queenCaptureMoves[i].allocatedSize; j++) {
-            if (playerMoves.queenCaptureMoves[i].captured[j].captureAllocatedSize > 0) {
-                free(playerMoves.queenCaptureMoves[i].captured[j].captures);
+            if (playerMoves.queenCaptureMoves[i].captureCollections[j].captureAllocatedSize > 0) {
+                free(playerMoves.queenCaptureMoves[i].captureCollections[j].captures);
             }
         }
-        free(playerMoves.queenCaptureMoves[i].captured);
-        free(playerMoves.queenCaptureMoves[i].to);
+        free(playerMoves.queenCaptureMoves[i].captureCollections);
+        free(playerMoves.queenCaptureMoves[i].toArray);
     }
 
     for (int i = 0; i < playerMoves.pawnCaptureMovesAllocatedSize; i++) {
         for (int j = 0; j < playerMoves.pawnCaptureMoves[i].allocatedSize; j++) {
-            if (playerMoves.pawnCaptureMoves[i].captured[j].captureAllocatedSize > 0) {
-                free(playerMoves.pawnCaptureMoves[i].captured[j].captures);
+            if (playerMoves.pawnCaptureMoves[i].captureCollections[j].captureAllocatedSize > 0) {
+                free(playerMoves.pawnCaptureMoves[i].captureCollections[j].captures);
             }
         }
-        free(playerMoves.pawnCaptureMoves[i].captured);
-        free(playerMoves.pawnCaptureMoves[i].to);
+        free(playerMoves.pawnCaptureMoves[i].captureCollections);
+        free(playerMoves.pawnCaptureMoves[i].toArray);
     }
 
     for (int i = 0; i < playerMoves.pieceMovesAllocatedSize; i++) {
