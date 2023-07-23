@@ -22,7 +22,7 @@ typedef enum PieceType {
     QUEEN,
 } PieceType;
 
-typedef struct  {
+typedef struct Position {
     int row;
     int col;
 } Position;
@@ -43,9 +43,9 @@ typedef struct CaptureCollection {
 
 typedef struct PieceCaptureMoves {
     Position from;
-    Position *to;
+    Position *toArray;
 
-    CaptureCollection *captured;
+    CaptureCollection *captureCollections;
 
     int size;
     int allocatedSize;
