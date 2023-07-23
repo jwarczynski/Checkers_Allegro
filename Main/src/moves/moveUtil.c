@@ -87,12 +87,12 @@ void markAllMovesAsNotInitialized() {
 
 void markMovesAsNotInitialized(int startIndex, int endIndex) {
     for (int i = startIndex; i < endIndex; ++i) {
-        playerMoves.queenCaptureMoves[i].to = NULL;
-        playerMoves.queenCaptureMoves[i].captured = NULL;
+        playerMoves.queenCaptureMoves[i].toArray = NULL;
+        playerMoves.queenCaptureMoves[i].captureCollections = NULL;
         playerMoves.queenCaptureMoves[i].allocatedSize = 0;
 
-        playerMoves.pawnCaptureMoves[i].to = NULL;
-        playerMoves.pawnCaptureMoves[i].captured = NULL;
+        playerMoves.pawnCaptureMoves[i].toArray = NULL;
+        playerMoves.pawnCaptureMoves[i].captureCollections = NULL;
         playerMoves.pawnCaptureMoves[i].allocatedSize = 0;
 
         playerMoves.pieceMoves[i].to = NULL;

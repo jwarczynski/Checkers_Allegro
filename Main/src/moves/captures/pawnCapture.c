@@ -27,11 +27,11 @@ void generatePawnCaptureMovesFrom(Position position) {
 void initPawnCaptureMovesFrom(Position position) {
     playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].size = 0;
     playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].from = position;
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].to = (Position*) malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captured = (CaptureCollection *) malloc(sizeof(CaptureCollection) * MAX_QUEEN_CAPTURE_MOVES);
+    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].toArray = (Position*) malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
+    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captureCollections = (CaptureCollection *) malloc(sizeof(CaptureCollection) * MAX_QUEEN_CAPTURE_MOVES);
     playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].allocatedSize = MAX_QUEEN_CAPTURE_MOVES;
 
-    markAllCaptureCollectionsAsNotInitialized(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captured, 0 , MAX_QUEEN_CAPTURE_MOVES);
+    markAllCaptureCollectionsAsNotInitialized(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captureCollections, 0 , MAX_QUEEN_CAPTURE_MOVES);
 }
 
 bool tryAllDirectionsForPawnCapture(CaptureCollection *previousCaptures, Position position) {
@@ -72,7 +72,7 @@ bool addNextPawnCaptureMoveIfPossible(CaptureCollection *previousCaptures, Posit
 
 void savePawnPositionAndCapture(CaptureCollection *captureCollection, Position position) {
     PieceCaptureMoves *pawnCaptureMoves = &(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize]);
-    pawnCaptureMoves->to[pawnCaptureMoves->size] = position;
-    pawnCaptureMoves->captured[pawnCaptureMoves->size] = *captureCollection;
+    pawnCaptureMoves->toArray[pawnCaptureMoves->size] = position;
+    pawnCaptureMoves->captureCollections[pawnCaptureMoves->size] = *captureCollection;
     pawnCaptureMoves->size++;
 }

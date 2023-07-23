@@ -27,11 +27,11 @@ void generateQueenCaptureMovesFrom(Position position) {
 void initQueenCaptureMovesFrom(Position position) {
     playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].size = 0;
     playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].from = position;
-    playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].to = (Position*) malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
-    playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captured = (CaptureCollection *) malloc(sizeof(CaptureCollection) * MAX_QUEEN_CAPTURE_MOVES);
+    playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].toArray = (Position*) malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
+    playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captureCollections = (CaptureCollection *) malloc(sizeof(CaptureCollection) * MAX_QUEEN_CAPTURE_MOVES);
     playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].allocatedSize = MAX_QUEEN_CAPTURE_MOVES;
 
-    markAllCaptureCollectionsAsNotInitialized(playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captured, 0 , MAX_QUEEN_CAPTURE_MOVES);
+    markAllCaptureCollectionsAsNotInitialized(playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captureCollections, 0 , MAX_QUEEN_CAPTURE_MOVES);
 }
 
 bool addQueenCaptureMoves(CaptureCollection *previousCaptures, Position position, Position direction) {
@@ -76,19 +76,19 @@ bool tryAllDirectionsForQueenCapture(CaptureCollection *previousCaptures, Positi
 
 void saveQueenPositionAndCaptures(CaptureCollection *captureCollection, Position position) {
     PieceCaptureMoves *queenCaptureMoves = &(playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize]);
-    queenCaptureMoves->to[queenCaptureMoves->size] = position;
-    queenCaptureMoves->captured[queenCaptureMoves->size] = *captureCollection;
+    queenCaptureMoves->toArray[queenCaptureMoves->size] = position;
+    queenCaptureMoves->captureCollections[queenCaptureMoves->size] = *captureCollection;
     queenCaptureMoves->size++;
 }
 
 void deallocateCaptureMoves(PieceCaptureMoves *pieceCaptureMoves) {
-    free(pieceCaptureMoves->captured);
-    free(pieceCaptureMoves->to);
+    free(pieceCaptureMoves->captureCollections);
+    free(pieceCaptureMoves->toArray);
     free(pieceCaptureMoves);
 }
 
 void reallocateQueenCaptureMoves(PieceCaptureMoves *queenCaptureMoves) {
-    queenCaptureMoves->captured = realloc(queenCaptureMoves->captured, sizeof(CaptureCollection) * queenCaptureMoves->size);
-    queenCaptureMoves->to = realloc(queenCaptureMoves->to, sizeof(Position) * queenCaptureMoves->size);
+    queenCaptureMoves->captureCollections = realloc(queenCaptureMoves->captureCollections, sizeof(CaptureCollection) * queenCaptureMoves->size);
+    queenCaptureMoves->toArray = realloc(queenCaptureMoves->toArray, sizeof(Position) * queenCaptureMoves->size);
     queenCaptureMoves->allocatedSize = queenCaptureMoves->size;
 }
