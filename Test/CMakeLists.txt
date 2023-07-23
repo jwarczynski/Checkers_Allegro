@@ -5,7 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 set(ALLEGRO_DIR "../Main/allegro")
 
-set(UNITY_SRC "Unity/src/unity.c" testMain.c queenCaptureTest.h pawnCaptureTest.c pawnCaptureTest.h)
+set(UNITY_SRC "Unity/src/unity.c" testMain.c include/queenCaptureTest.h src/pawnCaptureTest.c include/pawnCaptureTest.h src/pawnMoveTest.c include/pawnMoveTest.h src/queenMoveTest.c include/queenMoveTest.h src/testUtil.c include/testUtil.h src/gameEngineTest.c include/gameEngineTest.h)
 
 include_directories(${ALLEGRO_DIR}/include)
 include_directories(../Main/include)
