@@ -71,4 +71,6 @@ typedef enum Player {
     BLACK,
 } Player;
 
+typedef void (*PieceMoveStrategy)(Position to, Position direction);
+
 #endif //CHECKERS_TYPES_H
