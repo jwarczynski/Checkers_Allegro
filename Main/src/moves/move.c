@@ -1,43 +1,80 @@
-////
-//// Created by Jj on 07/07/2023.
-////
 //
-//#include <malloc.h>
-//#include <stdio.h>
+// Created by Jj on 07/07/2023.
 //
-//#include "moves/move.h"
-//#include "moves/moveUtil.h"
-//
-//extern Piece board[BOARD_SIZE][BOARD_SIZE];
-//extern Player currentPlayer;
-//extern PlayerMoves playerMoves;
-//
-//
-//PieceMoves *getMoveFrom(Piece board[BOARD_SIZE][BOARD_SIZE], Position position) {
-//    PieceMoves *pieceMoves = malloc(sizeof(PieceMoves));
-//
-//    if (isWhitePiece(board[position.row][position.col])) {
-//        pieceMoves = getWhiteMoves(board, position);
-//    } else if (isBlackPiece(board[position.row][position.col])) {
-//        pieceMoves = getBlackMoves(board, position);
-//    } else {
-//        free(pieceMoves);
-//        fprintf(stderr, "There is no piece at position (%d, %d)\n", position.row, position.col);
-//        return NULL;
-//    }
-//
-//    return pieceMoves;
-//}
-//
-//
-//PieceMoves *getBlackMoves(Piece *board[BOARD_SIZE], Position position) {
-//    Move *moves = malloc(sizeof(Move) * 4);
-//    int moveCount = 0;
-//
-//    if (board[position.row - 1][position.col - 1] == EMPTY) {
-//        moves[moveCount].from = position;
-//        moves[moveCount].to.row = position.row - 1;
-//        moves[moveCount].to.col = position.col - 1;
-//        moveCount++;
-//    }
-//}
+
+#include <malloc.h>
+
+#include "moves/move.h"
+#include "moves/moveUtil.h"
+
+
+extern Player currentPlayer;
+extern PlayerMoves playerMoves;
+extern Piece board[BOARD_SIZE][BOARD_SIZE];
+
+void initPieceMovesFrom(Position position, int initialSize) {
+    reallocatePieceMovesMemoryIfOverflow();
+    playerMoves.pieceMoves[playerMoves.pieceMovesSize].size = 0;
+    playerMoves.pieceMoves[playerMoves.pieceMovesSize].from = position;
+    playerMoves.pieceMoves[playerMoves.pieceMovesSize].to = malloc(sizeof(Position) * initialSize);
+    playerMoves.pieceMoves[playerMoves.pieceMovesSize].allocatedSize = initialSize;
+}
+
+void reallocatePieceMovesMemoryIfOverflow() {
+    if (playerMoves.pieceMovesSize == playerMoves.pieceMovesAllocatedSize) {
+        playerMoves.pieceMovesAllocatedSize *= 2;
+        playerMoves.pieceMoves = realloc(playerMoves.pieceMoves, sizeof(PieceMoves) * playerMoves.pieceMovesAllocatedSize);
+    }
+}
+
+void generateUpperMovesFrom(Position position, PieceMoveStrategy strategy) {
+    generateUpperLeftMoves(position, strategy);
+    generateUpperRightMoves(position, strategy);
+}
+
+void generateAllDirectionsMovesFrom(Position position, PieceMoveStrategy strategy) {
+    generateUpperMovesFrom(position, strategy);
+    generateLowerLeftMoves(position, strategy);
+    generateLowerRightMoves(position, strategy);
+}
+
+void generateUpperLeftMoves(Position position, PieceMoveStrategy strategy) {
+    Position direction;
+    direction.row = currentPlayer == WHITE ? 1 : -1;
+    direction.col = -1;
+    generateMovesInDirection(position, direction, strategy);
+}
+
+void generateUpperRightMoves(Position position, PieceMoveStrategy strategy) {
+    Position direction;
+    direction.row = currentPlayer == WHITE ? 1 : -1;
+    direction.col = 1;
+    generateMovesInDirection(position, direction, strategy);
+}
+
+void generateLowerLeftMoves(Position position, PieceMoveStrategy strategy) {
+    Position direction;
+    direction.row = currentPlayer == WHITE ? -1 : 1;
+    direction.col = -1;
+    generateMovesInDirection(position, direction, strategy);
+}
+
+void generateLowerRightMoves(Position position, PieceMoveStrategy strategy) {
+    Position direction;
+    direction.row = currentPlayer == WHITE ? -1 : 1;
+    direction.col = 1;
+    generateMovesInDirection(position, direction, strategy);
+}
+
+void generateMovesInDirection(Position position, Position direction, PieceMoveStrategy strategy) {
+    changePosition(&position, direction.row, direction.col);
+    strategy(position, direction);
+}
+
+void addPieceMove(Position position) {
+    PieceMoves *currentMove = &(playerMoves.pieceMoves[playerMoves.pieceMovesSize]);
+//    currentMove->from = position;
+    currentMove->to[currentMove->size] = position;
+    currentMove->size++;
+//    playerMoves.pieceMovesSize++;
+}
