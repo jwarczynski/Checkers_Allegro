@@ -15,6 +15,6 @@ link_directories(${ALLEGRO_DIR}/lib)
 file(GLOB_RECURSE SOURCE_FILES "../Main/src/*.c")
 list(FILTER SOURCE_FILES EXCLUDE REGEX ".*main.c$")
 
-add_executable(${PROJECT_NAME} queenCaptureTest.c ${SOURCE_FILES} ${UNITY_SRC})
+add_executable(${PROJECT_NAME} src/queenCaptureTest.c ${SOURCE_FILES} ${UNITY_SRC})
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Checkers_lib)
