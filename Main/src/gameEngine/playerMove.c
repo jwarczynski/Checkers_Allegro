@@ -75,3 +75,12 @@ void deallocatePlayerMovesMemory() {
     playerMoves.pawnCaptureMovesAllocatedSize = 0;
     playerMoves.pieceMovesAllocatedSize = 0;
 }
+
+PlayerMoves getEmptyPlayerMoves() {
+    PlayerMoves emptyPLayerMoves;
+    emptyPLayerMoves.pieceMovesSize = 0;
+    emptyPLayerMoves.pawnCaptureMovesSize = 0;
+    emptyPLayerMoves.queenCaptureMovesSize = 0;
+    return emptyPLayerMoves;
+
+}

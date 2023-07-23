@@ -11,6 +11,7 @@ void generatePlayerMoves();
 void generateMovesByType(Position position);
 void initPlayerMoves();
 void deallocatePlayerMovesMemory();
+PlayerMoves getEmptyPlayerMoves();
 
 
 #endif //CHECKERS_PLAYER_MOVE_H
