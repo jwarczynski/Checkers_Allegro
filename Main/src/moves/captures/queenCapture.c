@@ -35,7 +35,6 @@ void initQueenCaptureMovesFrom(Position position) {
 }
 
 bool addQueenCaptureMoves(CaptureCollection *previousCaptures, Position position, Position direction) {
-    PieceCaptureMoves *queenCaptureMoves = playerMoves.queenCaptureMoves;
     changePosition(&position, direction.row, direction.col);
 
     while (isOnBoard(position)) {
