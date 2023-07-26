@@ -24,6 +24,7 @@ int main() {
     // QUEEN CAPTURE TESTS
     RUN_TEST(shouldYield2QueenCaptureMovesWith2CapturesEach);
     RUN_TEST(shouldYield3QueenCaptureMovesWith1Capture);
+    RUN_TEST(shouldYield5QueenCaptureMovesWith1CaptureEach);
 
     // PAWN CAPTURE TESTS
     RUN_TEST(shouldYield2PawnCaptureMovesWith2CapturesEach);
