@@ -24,9 +24,7 @@ bool isAlreadyCaptured(CaptureCollection previousCaptures, Position position) {
 
 void initCaptureIfNull(CaptureCollection **captures, PieceType pieceType) {
     if (*captures == NULL) {
-        *captures = pieceType == QUEEN ?
-                &(playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].captureCollections[playerMoves.queenCaptureMoves[playerMoves.queenCaptureMovesSize].size]) :
-                &(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captureCollections[playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].size]);
+        *captures = (CaptureCollection*)malloc(sizeof(CaptureCollection));
         (*captures)->captureSize = 0;
         (*captures)->captureAllocatedSize = 0;
         (*captures)->captures = NULL;

@@ -57,7 +57,6 @@ bool addQueenCaptureMovesIfEmpty(CaptureCollection *previousCaptures, Position c
 
     while (isOnBoard(to) && isEmpty(board, to)) {
         anyCapturePossible = true;
-        initCaptureIfNull(&previousCaptures, QUEEN);
         CaptureCollection *previousCapturesCopy = copyCapture(*previousCaptures);
         addCaptureToCaptureArray(previousCapturesCopy, capturedPiecePosition);
         addNextQueenCaptureMoveIfPossible(previousCapturesCopy, to);
