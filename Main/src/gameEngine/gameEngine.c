@@ -39,6 +39,7 @@ void runGame() {
             runTurn();
             changePlayer();
         }
+        drawBoard();
         printf("Game over!\n");
         printf("New game? (y/n)\n");
         if (getchar() == 'n') {
