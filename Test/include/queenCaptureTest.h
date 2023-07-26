@@ -7,5 +7,6 @@
 
 void shouldYield2QueenCaptureMovesWith2CapturesEach();
 void shouldYield3QueenCaptureMovesWith1Capture();
+void shouldYield5QueenCaptureMovesWith1CaptureEach();
 
 #endif //CHECKERS_QUEEN_CAPTURE_TEST_H

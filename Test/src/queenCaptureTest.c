@@ -5,10 +5,8 @@
 #include "../Unity/src/unity.h"
 #include "boardSetup.h"
 #include "gameEngine/playerMove.h"
-
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
+#include "globals.h"
+#include "../include/testUtil.h"
 
 const char *queenSingleCaptureMultipleCaptureMovesTestBoardPath = "../../Test/testAssets/queenSingleCaptureMultipleCaptureMovesTestBoard.txt";
 const char *testBoardPath = "../../Test/testAssets/queen2CaptureMovesWIth2CapturesEachTestBoard.txt";
@@ -51,6 +49,7 @@ void shouldYield3QueenCaptureMovesWith1Capture() {
     generatePlayerMoves();
 
     TEST_ASSERT_EQUAL_INT(1, playerMoves.queenCaptureMovesSize);
+    TEST_ASSERT_EQUAL_INT(1, playerMoves.queenCaptureMoves->captureCollections[0].captureSize);
 
     TEST_ASSERT_EQUAL_INT(2, playerMoves.queenCaptureMoves[0].toArray[0].row);
     TEST_ASSERT_EQUAL_INT(2, playerMoves.queenCaptureMoves[0].toArray[0].col);
@@ -69,4 +68,16 @@ void shouldYield3QueenCaptureMovesWith1Capture() {
 
     TEST_ASSERT_EQUAL_INT(3, playerMoves.queenCaptureMoves[0].captureCollections[2].captures[0].row);
     TEST_ASSERT_EQUAL_INT(3, playerMoves.queenCaptureMoves[0].captureCollections[2].captures[0].col);
+}
+
+void shouldYield5QueenCaptureMovesWith1CaptureEach() {
+    currentPlayer = WHITE;
+    setALlBoardToEmpty();
+    board[7][6] = WHITE_QUEEN;
+    board[6][5] = BLACK_PAWN;
+    initPlayerMoves();
+    generatePlayerMoves();
+
+    TEST_ASSERT_EQUAL_INT(1, playerMoves.queenCaptureMoves[0].captureCollections[2].captureSize);
+
 }
