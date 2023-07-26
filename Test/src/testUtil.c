@@ -4,10 +4,8 @@
 
 #include "../include/testUtil.h"
 #include "types.h"
+#include "globals.h"
 
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 void setALlBoardToEmpty() {
     for (int i = 0; i < BOARD_SIZE; i++) {

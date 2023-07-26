@@ -6,11 +6,8 @@
 #include "boardSetup.h"
 
 #include "gameEngine/playerMove.h"
-#include "gameEngine/gameEngineUtil.h"
+#include "globals.h"
 
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 const char *pawn2CaptureMovesWIth2CapturesEachTestBoard = "../../Test/testAssets/pawn2CaptureMovesWIth2CapturesEachTestBoard.txt";
 const char *twoPawns4CaptureMovesWIth2CapturesEachTestBoard = "../../Test/testAssets/2pawns4CaptureMovesWIth2CapturesEachTestBoard.txt";

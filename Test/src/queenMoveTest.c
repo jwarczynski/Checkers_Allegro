@@ -6,10 +6,8 @@
 #include "../include/testUtil.h"
 #include "moves/moves/queenMove.h"
 #include "../Unity/src/unity.h"
+#include "globals.h"
 
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 void shouldYield2MovesOnEachDiagonalPieceStop(enum Piece piece);
 

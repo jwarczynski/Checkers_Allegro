@@ -8,6 +8,7 @@
 #include "gameEngine/playerMove.h"
 #include "input/consoleInputParser.h"
 
+
 void shouldReturn2Positions() {
     initPlayerMoves();
     int count;

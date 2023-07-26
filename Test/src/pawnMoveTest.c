@@ -8,10 +8,9 @@
 #include "../Unity/src/unity.h"
 #include "gameEngine/playerMove.h"
 #include "../include/testUtil.h"
+#include "globals.h"
 
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
+
 
 void shouldYield2WhitePawnMoves() {
     Position from = {1, 1};
