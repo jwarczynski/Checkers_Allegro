@@ -8,7 +8,7 @@
 #include "allegro5/threads.h"
 #include "ui/uiInitializer.h"
 #include "gameEngine/gameEngine.h"
-#include "ui/eventHandler.h"
+#include "ui/events/eventHandler.h"
 
 ALLEGRO_MUTEX* clickMutex;
 ALLEGRO_COND* clickCond;
