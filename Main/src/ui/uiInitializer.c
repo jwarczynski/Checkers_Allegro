@@ -29,8 +29,10 @@ void initAllegro() {
 }
 
 void initAllegroAddons() {
-    ui.display = al_create_display(640, 640);
-    ui.buffer = al_create_bitmap(640, 640);
+    int displayWidth = LEFT_PANEL_WIDTH + BOARD_SIZE * SQUARE_SIZE + RIGHT_PANEL_WIDTH;
+    int displayHeight = TOP_PANEL_HEIGHT + BOARD_SIZE * SQUARE_SIZE + BOTTOM_PANEL_HEIGHT;
+    ui.display = al_create_display(displayWidth, displayHeight);
+    ui.buffer = al_create_bitmap(displayWidth, displayHeight);
     ui.queue = al_create_event_queue();
     ui.timer = al_create_timer(1.0 / 60);
 }
