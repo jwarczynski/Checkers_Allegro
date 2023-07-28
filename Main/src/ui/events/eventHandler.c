@@ -4,10 +4,10 @@
 
 #include <stdio.h>
 #include <unistd.h>
-#include "ui/eventHandler.h"
+#include "ui/events/eventHandler.h"
 #include "ui/uiState.h"
 #include "ui/uiInitializer.h"
-#include "ui/eventHandlerUtil.h"
+#include "ui/events/eventHandlerUtil.h"
 #include "gameEngine/moveValidator.h"
 
 extern UI ui;
