@@ -12,7 +12,7 @@
 #include "gameEngine/playerMove.h"
 #include "input/consoleInputParser.h"
 #include "gameEngine/moveValidator.h"
-#include "ui/boardPainter.h"
+#include "ui/display/boardPainter.h"
 #include "allegro5/threads.h"
 
 Player currentPlayer;
@@ -32,6 +32,7 @@ void runGame() {
     while (true) {
         setupBoard(board);
         currentPlayer = WHITE;
+        drawInterface();
 
         while (isNotEndOfGame(board)) {
             showBoard(board);
@@ -39,7 +40,7 @@ void runGame() {
             runTurn();
             changePlayer();
         }
-        drawBoard();
+        drawInterface();
         printf("Game over!\n");
         printf("New game? (y/n)\n");
         if (getchar() == 'n') {
@@ -62,15 +63,23 @@ void runTurn() {
     initPlayerMoves();
     generatePlayerMoves();
     do {
-        al_lock_mutex(clickMutex);
-        al_wait_cond(clickCond, clickMutex);
-        printUserPathChoice();
-        playerChoice = translateToPlayerMoves(userPathChoice, userPathChoiceLength);
-        al_unlock_mutex(clickMutex);
-        al_signal_cond(moveExecutedCond);
+        playerChoice = getUserChoiceByInterface();
     } while (!checkMoveValidity(playerChoice));
     executeMove(playerChoice);
     deallocatePlayerMovesMemory();
+}
+
+PlayerMoves getUserChoiceByInterface() {
+    al_lock_mutex(clickMutex);
+    al_wait_cond(clickCond, clickMutex);
+
+    printUserPathChoice();
+    PlayerMoves playerChoice = translateToPlayerMoves(userPathChoice, userPathChoiceLength);
+
+    al_unlock_mutex(clickMutex);
+    al_signal_cond(moveExecutedCond);
+
+    return playerChoice;
 }
 
 void changePlayer() {

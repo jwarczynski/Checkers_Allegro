@@ -9,6 +9,7 @@
 
 void runGame();
 void runTurn();
+PlayerMoves getUserChoiceByInterface();
 void changePlayer();
 void executeMove(PlayerMoves playerMove);
 void executeCaptureMove(PieceCaptureMoves pieceCaptureMoves);
