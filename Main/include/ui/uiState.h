@@ -14,7 +14,8 @@ typedef struct ui {
     ALLEGRO_EVENT_QUEUE *queue;
     ALLEGRO_TIMER *timer;
     ALLEGRO_BITMAP *buffer;
-    ALLEGRO_FONT *font;
+    ALLEGRO_FONT *coordinateFont;
+    ALLEGRO_FONT *menuFont;
 } UI;
 
 #endif //CHECKERS_UI_STATE_H

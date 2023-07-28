@@ -9,7 +9,7 @@ void initUI();
 void initAllegro();
 void initAllegroAddons();
 void registerEvents();
-void loadFont(const char *fontPath);
+void loadFonts(const char *fontPath);
 
 void destroyUI();
 

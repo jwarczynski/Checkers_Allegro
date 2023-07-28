@@ -8,15 +8,17 @@
 #include "allegro5/allegro_ttf.h"
 #include "allegro5/allegro_primitives.h"
 #include "ui/uiState.h"
+#include "ui/display/UIConstants.h"
+#include "types.h"
 
 UI ui;
-static const char *fontPath = "../assets/font.otf";
+static const char *fontPath = "../assets/Roboto_Mono/static/RobotoMono-Bold.ttf";
 
 void initUI() {
     initAllegro();
     initAllegroAddons();
     registerEvents();
-    loadFont(fontPath);
+    loadFonts(fontPath);
 }
 
 void initAllegro() {
@@ -46,8 +48,9 @@ void registerEvents() {
     al_start_timer(ui.timer);
 }
 
-void loadFont(const char *path) {
-    ui.font = al_load_font(path, 100, 0);
+void loadFonts(const char *path) {
+    ui.coordinateFont = al_load_font(path, 30, 0);
+    ui.menuFont = al_load_font(path, 40, 0);
 }
 
 void destroyUI() {
@@ -55,6 +58,7 @@ void destroyUI() {
     al_uninstall_keyboard();
     al_destroy_timer(ui.timer);
     al_destroy_bitmap(ui.buffer);
-    al_destroy_font(ui.font);
+    al_destroy_font(ui.coordinateFont);
+    al_destroy_font(ui.menuFont);
     al_destroy_event_queue(ui.queue);
 }
