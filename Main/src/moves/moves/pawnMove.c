@@ -3,6 +3,7 @@
 //
 
 
+#include <malloc.h>
 #include "types.h"
 #include "moves/moveUtil.h"
 #include "moves/moves/pawnMove.h"
@@ -17,19 +18,15 @@ extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 
 void generatePawnMovesFrom(Position position) {
-    initPawnMovesFrom(position);
     generateUpperMovesFrom(position, generatePawnMovesInDirection);
-    if (playerMoves.pieceMoves[playerMoves.pieceMovesSize].size > 0) {
-        playerMoves.pieceMovesSize++;
+}
+
+void generatePawnMovesInDirection(Position from, Position direction) {
+    Position to = {from.row + direction.row, from.col + direction.col};
+    if (isOnBoard(to) && isEmpty(board, to)) {
+        Move move;
+        fillNonCaptureMove(&move, from, to);
+        addMoveToPlayerMoves(move);
     }
 }
 
-void initPawnMovesFrom(Position position) {
-    initPieceMovesFrom(position, MAX_PAWN_MOVES);
-}
-
-void generatePawnMovesInDirection(Position position, Position direction) {
-    if (isOnBoard(position) && isEmpty(board, position)) {
-        addPieceMove(position);
-    }
-}

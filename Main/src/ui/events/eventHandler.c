@@ -18,11 +18,10 @@ extern ALLEGRO_COND* clickCond;
 extern ALLEGRO_MUTEX *moveExecutedMutex;
 extern ALLEGRO_COND *moveExecutedCond;
 
-Position *userPathChoice = NULL;
-int userPathChoiceLength = 0;
+Move userMoveChoice;
 
 void* eventHandler(void* arg) {
-    userPathChoice = malloc(sizeof(Position) * 10);
+    initUserMoveChoice();
 
     while (1) {
         al_lock_mutex(moveExecutedMutex);
@@ -33,14 +32,16 @@ void* eventHandler(void* arg) {
     }
 }
 
-void handleIncomingEvents() {
-    if (userPathChoice == NULL) {
-        userPathChoice = malloc(sizeof(Position) * 10);
-    }
-    ALLEGRO_EVENT event;
-    al_wait_for_event(ui.queue, &event);
-    handleEvent(event);
+void initUserMoveChoice() {
+    userMoveChoice.positionPath.path = (Position*) malloc(INITIAL_PATH_SIZE * sizeof (Position));
+    userMoveChoice.positionPath.size = 0;
+    userMoveChoice.positionPath.allocatedSize = INITIAL_PATH_SIZE;
+
+    userMoveChoice.captureCollection.captures = (Position*) malloc(INITIAL_CAPTURES_CAPACITY * sizeof (Position));
+    userMoveChoice.captureCollection.size = 0;
+    userMoveChoice.captureCollection.allocatedSize = INITIAL_CAPTURES_CAPACITY;
 }
+
 
 void handleEvent(ALLEGRO_EVENT event) {
     switch (event.type) {
@@ -50,6 +51,9 @@ void handleEvent(ALLEGRO_EVENT event) {
             handleKeyDown(event);
         case ALLEGRO_EVENT_MOUSE_BUTTON_DOWN:
             handleMouseClick(event);
+        case ALLEGRO_EVENT_MOUSE_AXES:
+//            TODO
+//            handleMouseAxes(event); break;
         default:
             return;
     }
@@ -91,7 +95,7 @@ void handleBoardClick(ALLEGRO_EVENT event) {
         al_wait_cond(moveExecutedCond, moveExecutedMutex);
         return resetSelectingMovePath(&lastClick);
     }
-    userPathChoice[userPathChoiceLength++] = click;
+    userMoveChoice.positionPath.path[userMoveChoice.positionPath.size++] = click;
     lastClick = click;
 }
 
@@ -101,11 +105,18 @@ void handleNonBoardCLick(ALLEGRO_EVENT event) {
 
 void resetSelectingMovePath(Position *lastClick) {
     *lastClick = (Position) {-1, -1};
-    userPathChoiceLength = 0;
+    userMoveChoice.positionPath.size = 0;
+    userMoveChoice.captureCollection.size = 0;
 }
 
 void resetMoveChoice() {
     ALLEGRO_EVENT event;
     event.mouse.x = -1;
     handleBoardClick(event);
+}
+
+void handleMouseAxes(ALLEGRO_EVENT event) {
+//    if (isHoveringAnyButton(event.mouse.x, event.mouse.y)) {
+//        return;
+//    }
 }

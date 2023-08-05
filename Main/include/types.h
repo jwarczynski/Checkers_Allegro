@@ -9,6 +9,10 @@
 #define MAX_QUEEN_CAPTURE_MOVES 20
 #define ALLOCATION_STEP_SIZE 10
 
+#define INITIAL_PLAYER_MOVES_CAPACITY 20
+#define INITIAL_CAPTURES_CAPACITY 10
+#define INITIAL_PATH_SIZE 10
+
 typedef enum Piece {
     EMPTY,
     WHITE_PAWN,
@@ -37,8 +41,8 @@ typedef struct PieceMoves {
 
 typedef struct CaptureCollection {
     Position *captures;
-    int captureSize;
-    int captureAllocatedSize;
+    int size;
+    int allocatedSize;
 } CaptureCollection;
 
 typedef struct PieceCaptureMoves {
@@ -71,6 +75,29 @@ typedef enum Player {
     BLACK,
 } Player;
 
-typedef void (*PieceMoveStrategy)(Position to, Position direction);
+typedef struct UISquare {
+    float x;
+    float y;
+    Piece piece;
+} UISquare;
+
+typedef struct PositionPath{
+    Position *path;
+    int size;
+    int allocatedSize;
+} PositionPath;
+
+typedef struct Move {
+    PositionPath positionPath;
+    CaptureCollection captureCollection;
+} Move;
+
+typedef struct PlayerMoveCollection {
+    Move *moves;
+    int size;
+    int allocatedSize;
+} PlayerMoveCollection;
+
+typedef void (*PieceMoveStrategy)(Position start, Position direction);
 
 #endif //CHECKERS_TYPES_H

@@ -15,64 +15,44 @@ extern PlayerMoves playerMoves;
 extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 
-void generatePawnCaptureMovesFrom(Position position) {
-    initPawnCaptureMovesFrom(position);
-    tryAllDirectionsForPawnCapture(NULL, position);
+bool generatePawnCaptureMovesFrom(Position position) {
+    Move *move = getStartingMove(position);
+    bool noCapturesPossible = tryAllDirectionsForPawnCapture(move, position);
 
-    if (playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].size != 0) {
-        playerMoves.pawnCaptureMovesSize ++;
-    }
+    return !noCapturesPossible;
 }
 
-void initPawnCaptureMovesFrom(Position position) {
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].size = 0;
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].from = position;
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].toArray = (Position*) malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captureCollections = (CaptureCollection *) malloc(sizeof(CaptureCollection) * MAX_QUEEN_CAPTURE_MOVES);
-    playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].allocatedSize = MAX_QUEEN_CAPTURE_MOVES;
-
-    markAllCaptureCollectionsAsNotInitialized(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize].captureCollections, 0 , MAX_QUEEN_CAPTURE_MOVES);
+bool tryAllDirectionsForPawnCapture(Move *intermediateMoves, Position position) {
+    return tryAllDirectionsForCapture(intermediateMoves, position, PAWN);
 }
 
-bool tryAllDirectionsForPawnCapture(CaptureCollection *previousCaptures, Position position) {
-    return tryAllDirectionsForCapture(previousCaptures, position, PAWN);
-}
-
-bool addPawnCaptureMoves(CaptureCollection *previousCaptures, Position position, Position direction) {
-    PieceCaptureMoves *pawnCaptureMoves = playerMoves.pawnCaptureMoves;
+bool addPawnCaptureMoves(Move *intermediateMoves, Position position, Position direction) {
     changePosition(&position, direction.row, direction.col);
 
     if (isOnBoard(position)) {
-        initCaptureIfNull(&previousCaptures, PAWN);
-        if (isCaptureForbidden(position, *previousCaptures)) {
+        initMoveIfNull(&intermediateMoves);
+        if (isCaptureForbidden(position, intermediateMoves->captureCollection)) {
             return false;
         }
         if (isOpponentPiece(board[position.row][position.col])) {
-            return addPawnCaptureMovesIfEmpty(previousCaptures, position, direction);
+            return addPawnCaptureMovesIfEmpty(intermediateMoves, position, direction);
         }
     }
     return false;
 }
 
-bool addPawnCaptureMovesIfEmpty(CaptureCollection *previousCaptures, Position capturedPiecePosition, Position direction) {
+bool addPawnCaptureMovesIfEmpty(Move *intermediateMoves, Position capturedPiecePosition, Position direction) {
     Position to = {capturedPiecePosition.row + direction.row, capturedPiecePosition.col + direction.col};
 
     if (isOnBoard(to) && isEmpty(board, to)) {
-        initCaptureIfNull(&previousCaptures, PAWN);
-        CaptureCollection *previousCapturesCopy = copyCapture(*previousCaptures);
-        addCaptureToCaptureArray(previousCapturesCopy, capturedPiecePosition);
-        return addNextPawnCaptureMoveIfPossible(previousCapturesCopy, to);
+        initCaptureIfNull(&intermediateMoves->captureCollection, PAWN);
+        Move *moveCopy = copyMove(*intermediateMoves);
+        addIntermediateMove(moveCopy, to, capturedPiecePosition);
+        return addNextPawnCaptureMoveIfPossible(moveCopy, to);
     }
     return false;
 }
 
-bool addNextPawnCaptureMoveIfPossible(CaptureCollection *previousCaptures, Position position) {
-    return addNextCaptureMoveIfPossible(previousCaptures, position, PAWN);
-}
-
-void savePawnPositionAndCapture(CaptureCollection *captureCollection, Position position) {
-    PieceCaptureMoves *pawnCaptureMoves = &(playerMoves.pawnCaptureMoves[playerMoves.pawnCaptureMovesSize]);
-    pawnCaptureMoves->toArray[pawnCaptureMoves->size] = position;
-    pawnCaptureMoves->captureCollections[pawnCaptureMoves->size] = *captureCollection;
-    pawnCaptureMoves->size++;
+bool addNextPawnCaptureMoveIfPossible(Move *intermediateMoves, Position position) {
+    return addNextCaptureMoveIfPossible(intermediateMoves, position, PAWN);
 }

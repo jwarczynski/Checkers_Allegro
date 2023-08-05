@@ -7,8 +7,11 @@
 
 #include "types.h"
 
-void initPieceMovesFrom(Position position, int initialSize);
 void addPieceMove(Position position);
+void addMoveToPlayerMoves(Move move);
+void fillNonCaptureMove(Move *move, Position from, Position to);
+void addNonCaptureMovePositionPath(Move *move, Position from, Position to);
+void markMoveCapturesEmpty(Move *move);
 void reallocatePieceMovesMemoryIfOverflow();
 
 void generateUpperMovesFrom(Position position, PieceMoveStrategy strategy);

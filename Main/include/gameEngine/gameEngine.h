@@ -9,15 +9,18 @@
 
 void runGame();
 void runTurn();
-PlayerMoves getUserChoiceByInterface();
+void waitForUserChoice();
 void changePlayer();
-void executeMove(PlayerMoves playerMove);
-void executeCaptureMove(PieceCaptureMoves pieceCaptureMoves);
-void executeNonCaptureMove(PieceMoves pieceMove);
+void executeMove(Move move);
+void executeIntermediateMove(Position from, Position to, Position capture);
+void executeLastIntermediateMove(Position from, Position to, Position capture);
+
 
 void removeCapturedPieces(CaptureCollection captureCollection);
 void moveFromTo(Position from, Position to);
 
 void upgradePawnIfReachedMorphSquare(Position position);
+void resetUserMoveChoice();
+void unlockUserInputThread();
 
 #endif //CHECKERS_GAME_ENGINE_H

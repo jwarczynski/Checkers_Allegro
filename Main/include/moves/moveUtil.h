@@ -18,11 +18,17 @@ bool isOpponentPiece(Piece piece);
 bool isOutOfBounds(Position position);
 bool isEmpty(Piece board[8][8], Position position);
 void changePosition(Position *position, int row, int col);
+Position getEmptyPosition();
 CaptureCollection *copyCapture(CaptureCollection capture);
 
 void initPlayerMoves();
-void markAllMovesAsNotInitialized();
-void markMovesAsNotInitialized(int startIndex, int endIndex);
+Move *getStartingMove(Position startingPosition);
+void markAllMovesUnInitialized();
+void initMoveIfNull(Move **intermediateMoves);
+Move *copyMove(Move move);
+PositionPath *copyPositionPath(PositionPath positionPath);
+
+void destroyPlayerMoves();
 
 
 #endif //CHECKERS_MOVE_UTIL_H

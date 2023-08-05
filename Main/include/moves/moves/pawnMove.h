@@ -9,6 +9,5 @@
 
 void generatePawnMovesFrom(Position position);
 void generatePawnMovesInDirection(Position position, Position direction);
-void initPawnMovesFrom(Position position);
 
 #endif //CHECKERS_PAWN_MOVE_H

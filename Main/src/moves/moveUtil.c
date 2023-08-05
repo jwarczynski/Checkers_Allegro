@@ -4,11 +4,9 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <stdio.h>
 #include "moves/moveUtil.h"
-
-
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
+#include "globals.h"
 
 
 bool isWhitePiece(Piece piece) {
@@ -52,50 +50,106 @@ void changePosition(Position *position, int row, int col) {
     position->col += col;
 }
 
+Position getEmptyPosition() {
+    return (Position) {-1, -1};
+}
+
+Move *copyMove(Move move) {
+    Move *copy = malloc(sizeof(Move));
+
+    PositionPath *positionPathCopy = copyPositionPath(move.positionPath);
+    CaptureCollection *captureCopy = copyCapture(move.captureCollection);
+
+    copy->positionPath = *positionPathCopy;
+    copy->captureCollection = *captureCopy;
+
+    return copy;
+}
+
+PositionPath *copyPositionPath(PositionPath positionPath) {
+    PositionPath *copy = malloc(sizeof(PositionPath));
+    copy->path = malloc(sizeof(Position) * positionPath.allocatedSize);
+    memcpy(copy->path, positionPath.path, sizeof(Position) * positionPath.size);
+    copy->size = positionPath.size;
+    copy->allocatedSize = positionPath.allocatedSize;
+    return copy;
+}
+
 CaptureCollection *copyCapture(CaptureCollection capture) {
     CaptureCollection *copy = malloc(sizeof(CaptureCollection));
-    copy->captures = malloc(sizeof(Position) * capture.captureAllocatedSize);
-    memcpy(copy->captures, capture.captures, sizeof(Position) * capture.captureAllocatedSize);
-    copy->captureSize = capture.captureSize;
-    copy->captureAllocatedSize = capture.captureAllocatedSize;
+    copy->captures = malloc(sizeof(Position) * capture.allocatedSize);
+    memcpy(copy->captures, capture.captures, sizeof(Position) * capture.allocatedSize);
+    copy->size = capture.size;
+    copy->allocatedSize = capture.allocatedSize;
     return copy;
 }
 
 void initPlayerMoves() {
-    if (playerMoves.queenCaptureMovesAllocatedSize == 0 || playerMoves.pawnCaptureMovesAllocatedSize == 0 ||
-        playerMoves.pieceMovesAllocatedSize == 0) {
+    playerMoveCollection.moves = (Move *) malloc(sizeof(Move) * INITIAL_PLAYER_MOVES_CAPACITY);
+    playerMoveCollection.allocatedSize = INITIAL_PLAYER_MOVES_CAPACITY;
+    playerMoveCollection.size = 0;
+    markAllMovesUnInitialized();
+}
 
-        playerMoves.queenCaptureMoves = malloc(sizeof(PieceCaptureMoves) * MAX_QUEEN_CAPTURE_MOVES);
-        playerMoves.pawnCaptureMoves = malloc(sizeof(PieceCaptureMoves) * MAX_QUEEN_CAPTURE_MOVES);
-        playerMoves.pieceMoves = malloc(sizeof(PieceMoves) * MAX_QUEEN_CAPTURE_MOVES);
+Move *getStartingMove(Position startingPosition) {
+    Move *move = malloc(sizeof(Move));
 
-        playerMoves.queenCaptureMovesSize = 0;
-        playerMoves.pawnCaptureMovesSize = 0;
-        playerMoves.pieceMovesSize = 0;
+    move->positionPath.path = malloc(sizeof(Position) * INITIAL_PATH_SIZE);
+    move->positionPath.path[0] = startingPosition;
+    move->positionPath.size = 1;
+    move->positionPath.allocatedSize = INITIAL_PATH_SIZE;
 
-        playerMoves.queenCaptureMovesAllocatedSize = MAX_QUEEN_CAPTURE_MOVES;
-        playerMoves.pawnCaptureMovesAllocatedSize = MAX_QUEEN_CAPTURE_MOVES;
-        playerMoves.pieceMovesAllocatedSize = MAX_QUEEN_CAPTURE_MOVES;
+    move->captureCollection.size = 0;
+    move->captureCollection.allocatedSize = 0;
+    move->captureCollection.captures = NULL;
 
-        markAllMovesAsNotInitialized();
+    return move;
+}
+
+void markAllMovesUnInitialized() {
+    for (int i = 0; i < INITIAL_PLAYER_MOVES_CAPACITY; i++) {
+        playerMoveCollection.moves[i].captureCollection.captures = NULL;
+        playerMoveCollection.moves[i].captureCollection.size = 0;
+        playerMoveCollection.moves[i].captureCollection.allocatedSize = 0;
+
+        playerMoveCollection.moves[i].positionPath.path = NULL;
+        playerMoveCollection.moves[i].positionPath.size = 0;
+        playerMoveCollection.moves[i].positionPath.allocatedSize = 0;
     }
 }
 
-void markAllMovesAsNotInitialized() {
-   markMovesAsNotInitialized(0, MAX_QUEEN_CAPTURE_MOVES);
+void initMoveIfNull(Move **intermediateMoves) {
+    if (*intermediateMoves == NULL) {
+        *intermediateMoves = (Move *) malloc(sizeof(Move));
+
+        (*intermediateMoves)->positionPath.path = (Position*)malloc(sizeof(Position) * INITIAL_PATH_SIZE);
+        (*intermediateMoves)->positionPath.allocatedSize = INITIAL_PATH_SIZE;
+        (*intermediateMoves)->positionPath.size = 0;
+
+        (*intermediateMoves)->captureCollection.captures = (Position*)malloc(sizeof(Position) * INITIAL_CAPTURES_CAPACITY);
+        (*intermediateMoves)->captureCollection.allocatedSize = INITIAL_CAPTURES_CAPACITY;
+        (*intermediateMoves)->captureCollection.size = 0;
+    }
+
+    if ((*intermediateMoves)->positionPath.path == NULL) {
+        (*intermediateMoves)->positionPath.path = (Position*)malloc(sizeof(Position) * INITIAL_PATH_SIZE);
+        (*intermediateMoves)->positionPath.allocatedSize = INITIAL_PATH_SIZE;
+        (*intermediateMoves)->positionPath.size = 0;
+    }
+
+    if ((*intermediateMoves)->captureCollection.captures == NULL) {
+        (*intermediateMoves)->captureCollection.captures = (Position*)malloc(sizeof(Position) * INITIAL_CAPTURES_CAPACITY);
+        (*intermediateMoves)->captureCollection.allocatedSize = INITIAL_CAPTURES_CAPACITY;
+        (*intermediateMoves)->captureCollection.size = 0;
+    }
 }
 
-void markMovesAsNotInitialized(int startIndex, int endIndex) {
-    for (int i = startIndex; i < endIndex; ++i) {
-        playerMoves.queenCaptureMoves[i].toArray = NULL;
-        playerMoves.queenCaptureMoves[i].captureCollections = NULL;
-        playerMoves.queenCaptureMoves[i].allocatedSize = 0;
 
-        playerMoves.pawnCaptureMoves[i].toArray = NULL;
-        playerMoves.pawnCaptureMoves[i].captureCollections = NULL;
-        playerMoves.pawnCaptureMoves[i].allocatedSize = 0;
-
-        playerMoves.pieceMoves[i].to = NULL;
-        playerMoves.pieceMoves[i].allocatedSize = 0;
+void destroyPlayerMoves() {
+    setbuf(stdout, 0);
+    for (int i = 0; i < playerMoveCollection.size; i++) {
+        free(playerMoveCollection.moves[i].captureCollection.captures);
+        free(playerMoveCollection.moves[i].positionPath.path);
     }
+    free(playerMoveCollection.moves);
 }

@@ -26,7 +26,11 @@ PlayerMoves initPawnCaptureMoveChoice();
 void initPlayerCaptureMoveChoice(PieceCaptureMoves **playerChoice);
 
 Position getDirection(Position start, Position end);
-Position findFirstNonEmptyFromDirection(Position start, Position direction);
+Position findFirstNonEmptyPiecePosition(Position start, Position end);
 void addCaptures(Position *moves, int count, Position* captures);
+
+void addCapturesToUserMoveChoice();
+void addCaptureIfOpponentOnPath(Position start, Position end);
+void addCaptureToUserMoveChoice(Position capture);
 
 #endif //CHECKERS_CONSOLE_INPUT_PARSER_H

@@ -7,9 +7,19 @@
 
 #include "types.h"
 
-bool tryAllDirectionsForCapture(CaptureCollection *previousCaptures, Position position, PieceType pieceType);
-bool addNextCaptureMoveIfPossible(CaptureCollection *previousCaptures, Position position, PieceType pieceType);
+bool tryAllDirectionsForCapture(Move *intermediateMoves, Position position, PieceType pieceType);
 void markAllCaptureCollectionsAsNotInitialized(CaptureCollection *captureCollectionArray, int start, int end);
-void savePositionAndCaptures(CaptureCollection *previousCaptures, Position position, PieceType pieceType);
+
+bool addNextCaptureMoveIfPossible(Move *intermediateMoves, Position position, PieceType pieceType);
+void savePositionAndCaptures(Move *move);
+bool hasMoreOrEqualCapturesAsPreviousMove(Move *intermediateMoves);
+
+void freeMovesUtterly(Move *intermediateMoves);
+void freeMoves(Move *intermediateMoves);
+
+bool addUpperLeftCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType);
+bool addUpperRightCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType);
+bool addLowerLeftCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType);
+bool addLowerRightCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType);
 
 #endif //CHECKERS_CAPTURE_H

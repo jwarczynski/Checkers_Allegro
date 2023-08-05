@@ -14,13 +14,14 @@
 #include "gameEngine/moveValidator.h"
 #include "ui/display/boardPainter.h"
 #include "allegro5/threads.h"
+#include "ui/display/animations/moveAnimation.h"
+#include "moves/moveUtil.h"
 
 Player currentPlayer;
-PlayerMoves playerMoves;
+PlayerMoveCollection playerMoveCollection;
 Piece board[BOARD_SIZE][BOARD_SIZE];
 
-extern Position *userPathChoice;
-extern int userPathChoiceLength;
+extern Move userMoveChoice;
 
 extern ALLEGRO_MUTEX* clickMutex;
 extern ALLEGRO_COND* clickCond;
@@ -51,57 +52,70 @@ void runGame() {
 
 void printUserPathChoice() {
     printf("User path choice: ");
-    for (int i = 0; i < userPathChoiceLength; i++) {
-        printf("(%d, %d) ", userPathChoice[i].row, userPathChoice[i].col);
+    for (int i = 0; i < userMoveChoice.positionPath.size; i++) {
+        printf("(%d, %d) ", userMoveChoice.positionPath.path[i].row, userMoveChoice.positionPath.path[i].col);
     }
     printf("\n");
 }
 
 void runTurn() {
-    PlayerMoves playerChoice;
+    PlayerMoveCollection userChoice;
 
     initPlayerMoves();
-    generatePlayerMoves();
-    do {
-        playerChoice = getUserChoiceByInterface();
-    } while (!checkMoveValidity(playerChoice));
-    executeMove(playerChoice);
-    deallocatePlayerMovesMemory();
+    generateMoves();
+
+//    TODO: extract to separate function
+    bool isUserMoveValid = false;
+    while (!isUserMoveValid) {
+        waitForUserChoice();
+        isUserMoveValid = isMoveValid(userMoveChoice);
+        if (!isUserMoveValid) {
+            unlockUserInputThread();
+        }
+    }
+
+    animateMove(userMoveChoice);
+    destroyPlayerMoves();
+    unlockUserInputThread();
 }
 
-PlayerMoves getUserChoiceByInterface() {
+void waitForUserChoice() {
+    // handling user mouse click in another thread
+    // when double click this thread is awaken and userPathChoice is filled
+
     al_lock_mutex(clickMutex);
     al_wait_cond(clickCond, clickMutex);
 
     printUserPathChoice();
-    PlayerMoves playerChoice = translateToPlayerMoves(userPathChoice, userPathChoiceLength);
+    addCapturesToUserMoveChoice();
 
+
+}
+
+void unlockUserInputThread() {
     al_unlock_mutex(clickMutex);
     al_signal_cond(moveExecutedCond);
-
-    return playerChoice;
 }
 
 void changePlayer() {
     currentPlayer = currentPlayer == WHITE ? BLACK : WHITE;
 }
 
-void executeMove(PlayerMoves playerChoice) {
-    if (playerMoves.queenCaptureMovesSize > 0) {
-        return executeCaptureMove(playerChoice.queenCaptureMoves[0]);
-    }
-    if (playerMoves.pawnCaptureMovesSize > 0) {
-        return executeCaptureMove(playerChoice.pawnCaptureMoves[0]);
-    }
-    if (playerMoves.pieceMovesSize > 0) {
-        return executeNonCaptureMove(playerChoice.pieceMoves[0]);
-    }
+void executeMove(Move move) {
+    removeCapturedPieces(move.captureCollection);
+    moveFromTo(move.positionPath.path[0], move.positionPath.path[move.positionPath.size - 1]);
+    upgradePawnIfReachedMorphSquare(move.positionPath.path[move.positionPath.size - 1]);
 }
 
-void executeCaptureMove(PieceCaptureMoves pieceCaptureMoves) {
-    removeCapturedPieces(pieceCaptureMoves.captureCollections[0]);
-    moveFromTo(pieceCaptureMoves.from, pieceCaptureMoves.toArray[0]);
-    upgradePawnIfReachedMorphSquare(pieceCaptureMoves.toArray[0]);
+void executeIntermediateMove(Position from, Position to, Position capture) {
+    board[to.row][to.col] = board[from.row][from.col];
+    board[from.row][from.col] = EMPTY;
+    board[capture.row][capture.col] = EMPTY;
+}
+
+void executeLastIntermediateMove(Position from, Position to, Position capture) {
+    executeIntermediateMove(from, to, capture);
+    upgradePawnIfReachedMorphSquare(to);
 }
 
 void upgradePawnIfReachedMorphSquare(Position position) {
@@ -114,7 +128,7 @@ void upgradePawnIfReachedMorphSquare(Position position) {
 }
 
 void removeCapturedPieces(CaptureCollection captureCollection) {
-    for (int i = 0; i < captureCollection.captureSize; i++) {
+    for (int i = 0; i < captureCollection.size; i++) {
         board[captureCollection.captures[i].row][captureCollection.captures[i].col] = EMPTY;
     }
 }
@@ -124,7 +138,7 @@ void moveFromTo(Position from, Position to) {
     board[from.row][from.col] = EMPTY;
 }
 
-void executeNonCaptureMove(PieceMoves pieceMove) {
-    moveFromTo(pieceMove.from, pieceMove.to[0]);
-    upgradePawnIfReachedMorphSquare(pieceMove.to[0]);
+void resetUserMoveChoice() {
+    userMoveChoice.positionPath.size = 0;
+    userMoveChoice.captureCollection.size = 0;
 }
