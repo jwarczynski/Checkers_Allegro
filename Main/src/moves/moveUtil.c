@@ -4,11 +4,9 @@
 
 #include <malloc.h>
 #include <string.h>
+#include <stdio.h>
 #include "moves/moveUtil.h"
-
-
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
+#include "globals.h"
 
 
 bool isWhitePiece(Piece piece) {

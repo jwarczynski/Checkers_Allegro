@@ -6,5 +6,10 @@
 #define CHECKERS_GAME_ENGINE_TEST_H
 
 void shouldReturn2Positions();
+void shouldGenerate7MovesForWhiteInFirstTurn();
+void shouldGenerate7MovesForBlackInFirstTurn();
+
+void shouldGenerate2QueenCaptureMoves();
+void shouldGenerate1QueenCaptureMoveWith2Captures();
 
 #endif //CHECKERS_GAME_ENGINE_TEST_H

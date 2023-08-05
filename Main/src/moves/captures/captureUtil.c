@@ -14,7 +14,7 @@ extern PlayerMoves playerMoves;
 extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
 bool isAlreadyCaptured(CaptureCollection previousCaptures, Position position) {
-    for (int i = 0; i < previousCaptures.captureSize; ++i) {
+    for (int i = 0; i < previousCaptures.size; ++i) {
         if (previousCaptures.captures[i].row == position.row && previousCaptures.captures[i].col == position.col) {
             return true;
         }
@@ -22,23 +22,21 @@ bool isAlreadyCaptured(CaptureCollection previousCaptures, Position position) {
     return false;
 }
 
-void initCaptureIfNull(CaptureCollection **captures, PieceType pieceType) {
-    if (*captures == NULL) {
-        *captures = (CaptureCollection*)malloc(sizeof(CaptureCollection));
-        (*captures)->captureSize = 0;
-        (*captures)->captureAllocatedSize = 0;
-        (*captures)->captures = NULL;
-    }
-
-    if ((*captures)->captures == NULL) {
-        (*captures)->captures = (Position*)malloc(sizeof(Position) * MAX_QUEEN_CAPTURE_MOVES);
-        (*captures)->captureAllocatedSize = MAX_QUEEN_CAPTURE_MOVES;
-        (*captures)->captureSize = 0;
+void initCaptureIfNull(CaptureCollection *captures, PieceType pieceType) {
+    if ((*captures).captures == NULL) {
+        (*captures).captures = (Position*)malloc(sizeof(Position) * INITIAL_CAPTURES_CAPACITY);
+        (*captures).allocatedSize = INITIAL_CAPTURES_CAPACITY;
+        (*captures).size = 0;
     }
 }
 
+void addIntermediateMove(Move *intermediateMoves, Position to, Position capturePosition) {
+    intermediateMoves->positionPath.path[intermediateMoves->positionPath.size++] = to;
+    intermediateMoves->captureCollection.captures[intermediateMoves->captureCollection.size++] = capturePosition;
+}
+
 void addCaptureToCaptureArray(CaptureCollection *captures, Position capturedPiecePosition) {
-    captures->captures[captures->captureSize++] = capturedPiecePosition;
+    captures->captures[captures->size++] = capturedPiecePosition;
 }
 
 bool isCaptureForbidden(Position position, CaptureCollection captureCollection) {

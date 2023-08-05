@@ -6,22 +6,16 @@
 #include <malloc.h>
 #include <string.h>
 #include "input/consoleInputParser.h"
-#include "gameEngine/playerMove.h"
-
-
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
-
+#include "globals.h"
+#include "moves/moveUtil.h"
+#include "gameEngine/moveValidator.h"
 
 PlayerMoves getUserChoice() {
     char* input = getUserInput();
     int count;
     Position* moves = parseUserInput(input, &count);
-    PlayerMoves playerChoice = translateToPlayerMoves(moves, count);
     free(input);
     free(moves);
-    return playerChoice;
 }
 
 char* getUserInput() {
@@ -76,82 +70,33 @@ bool parsePositionString(const char* input, Position* position) {
     return true; // Parsing successful.
 }
 
-PlayerMoves translateToPlayerMoves(Position* moves, int count) {
-    if (playerMoves.queenCaptureMovesSize > 0) {
-        return translateToQueenCaptureMoves(moves, count);
+
+
+//    TODO: move to converter.c
+
+void addCapturesToUserMoveChoice() {
+    for (int i = 1; i < userMoveChoice.positionPath.size; ++i) {
+        addCaptureIfOpponentOnPath(userMoveChoice.positionPath.path[i-1], userMoveChoice.positionPath.path[i]);
     }
-    if (playerMoves.pawnCaptureMovesSize > 0) {
-        return translateToPawnCaptureMoves(moves, count);
+}
+
+void addCaptureIfOpponentOnPath(Position start, Position end) {
+    Position firstOpponentPiecePosition = findFirstNonEmptyPiecePosition(start, end);
+    if (isNotNullPosition(firstOpponentPiecePosition)) {
+        addCaptureToUserMoveChoice(firstOpponentPiecePosition);
     }
-    if (playerMoves.pieceMovesSize > 0) {
-        return translateToPieceMoves(moves);
+}
+
+Position findFirstNonEmptyPiecePosition(Position start, Position end) {
+    Position direction = getDirection(start, end);
+    while (arePointsDifferent(start, end) && isOnBoard(start)) {
+        start.row += direction.row;
+        start.col += direction.col;
+        if (isOpponentPiece(board[start.row][start.col])) {
+            return start;
+        }
     }
-    return getEmptyPlayerMoves();
-}
-
-PlayerMoves translateToQueenCaptureMoves(Position* moves, int count) {
-    PlayerMoves playerChoice = initQueenCaptureMoveChoice();
-    translateToCaptureMove(moves, count, &playerChoice.queenCaptureMoves[0]);
-    return playerChoice;
-}
-
-PlayerMoves initQueenCaptureMoveChoice() {
-    PlayerMoves playerChoice;
-    initPlayerCaptureMoveChoice(&playerChoice.queenCaptureMoves);
-    return playerChoice;
-}
-
-void initPlayerCaptureMoveChoice(PieceCaptureMoves **playerChoice) {
-    *playerChoice = (PieceCaptureMoves*)malloc(sizeof(PieceCaptureMoves));
-    (*playerChoice)->captureCollections = (CaptureCollection*)malloc(sizeof(CaptureCollection));
-    (*playerChoice)->captureCollections[0].captures = (Position*)malloc(MAX_QUEEN_CAPTURE_MOVES * sizeof(Position));
-    (*playerChoice)->toArray = (Position*)malloc(sizeof(Position));
-    (*playerChoice)->size = 1;
-    (*playerChoice)->allocatedSize = 1;
-    (*playerChoice)->captureCollections[0].captureSize = 0;
-    (*playerChoice)->captureCollections[0].captureAllocatedSize = MAX_QUEEN_CAPTURE_MOVES;
-}
-
-PlayerMoves translateToPawnCaptureMoves(Position* moves, int count) {
-    PlayerMoves playerChoice = initPawnCaptureMoveChoice();
-    translateToCaptureMove(moves, count, &playerChoice.pawnCaptureMoves[0]);
-    return playerChoice;
-}
-
-PlayerMoves initPawnCaptureMoveChoice() {
-    PlayerMoves playerChoice;
-    initPlayerCaptureMoveChoice(&playerChoice.pawnCaptureMoves);
-    return playerChoice;
-}
-
-void translateToCaptureMove(Position* moves, int count, PieceCaptureMoves *playerChoice) {
-    addCaptures(moves, count, playerChoice->captureCollections[0].captures);
-    playerChoice->from = moves[0];
-    playerChoice->toArray[0] = moves[count-1];
-    playerChoice->captureCollections[0].captureSize = count-1;
-}
-
-PlayerMoves translateToPieceMoves(Position* moves) {
-    PlayerMoves playerChoice = initPlayerMoveChoice();
-    playerChoice.pieceMoves[0].from = moves[0];
-    playerChoice.pieceMoves[0].to[0] = moves[1];
-    return playerChoice;
-}
-
-PlayerMoves initPlayerMoveChoice() {
-    PlayerMoves playerChoice;
-    playerChoice.pieceMovesSize = 1;
-    playerChoice.pieceMoves = (PieceMoves*)malloc(playerChoice.pieceMovesSize * sizeof(PieceMoves));
-    playerChoice.pieceMoves[0].to = (Position*)malloc(1 * sizeof(Position));
-
-    return playerChoice;
-}
-
-void addCaptures(Position *moves, int count, Position* captures) {
-    for (int i = 1; i < count; i++) {
-        Position moveDirection = getDirection(moves[i-1], moves[i]);
-        captures[i-1] = findFirstNonEmptyFromDirection(moves[i-1], moveDirection);
-    }
+    return getNullPosition();
 }
 
 Position getDirection(Position start, Position end) {
@@ -165,12 +110,7 @@ Position getDirection(Position start, Position end) {
     return direction;
 }
 
-Position findFirstNonEmptyFromDirection(Position start, Position direction) {
-    while (true) {
-        start.row += direction.row;
-        start.col += direction.col;
-        if (board[start.row][start.col] != EMPTY) {
-            return start;
-        }
-    }
+void addCaptureToUserMoveChoice(Position capture) {
+    userMoveChoice.captureCollection.captures[userMoveChoice.captureCollection.size++] = capture;
 }
+

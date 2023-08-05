@@ -6,26 +6,8 @@
 
 #include "moves/move.h"
 #include "moves/moveUtil.h"
+#include "globals.h"
 
-
-extern Player currentPlayer;
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
-
-void initPieceMovesFrom(Position position, int initialSize) {
-    reallocatePieceMovesMemoryIfOverflow();
-    playerMoves.pieceMoves[playerMoves.pieceMovesSize].size = 0;
-    playerMoves.pieceMoves[playerMoves.pieceMovesSize].from = position;
-    playerMoves.pieceMoves[playerMoves.pieceMovesSize].to = malloc(sizeof(Position) * initialSize);
-    playerMoves.pieceMoves[playerMoves.pieceMovesSize].allocatedSize = initialSize;
-}
-
-void reallocatePieceMovesMemoryIfOverflow() {
-    if (playerMoves.pieceMovesSize == playerMoves.pieceMovesAllocatedSize) {
-        playerMoves.pieceMovesAllocatedSize *= 2;
-        playerMoves.pieceMoves = realloc(playerMoves.pieceMoves, sizeof(PieceMoves) * playerMoves.pieceMovesAllocatedSize);
-    }
-}
 
 void generateUpperMovesFrom(Position position, PieceMoveStrategy strategy) {
     generateUpperLeftMoves(position, strategy);
@@ -67,14 +49,37 @@ void generateLowerRightMoves(Position position, PieceMoveStrategy strategy) {
 }
 
 void generateMovesInDirection(Position position, Position direction, PieceMoveStrategy strategy) {
-    changePosition(&position, direction.row, direction.col);
     strategy(position, direction);
 }
 
 void addPieceMove(Position position) {
-    PieceMoves *currentMove = &(playerMoves.pieceMoves[playerMoves.pieceMovesSize]);
-//    currentMove->from = position;
-    currentMove->to[currentMove->size] = position;
-    currentMove->size++;
-//    playerMoves.pieceMovesSize++;
+    Move *move = &playerMoveCollection.moves[playerMoveCollection.size];
+    initMoveIfNull(&move);
+    move->positionPath.path[move->positionPath.size++] = position;
+
+    playerMoveCollection.size++;
+}
+
+
+void fillNonCaptureMove(Move *move, Position from, Position to) {
+    addNonCaptureMovePositionPath(move, from, to);
+    markMoveCapturesEmpty(move);
+}
+
+void addNonCaptureMovePositionPath(Move *move, Position from, Position to) {
+    move->positionPath.path = malloc(sizeof(Position) * 2);
+    move->positionPath.size = 2;
+    move->positionPath.allocatedSize = 2;
+    move->positionPath.path[0] = from;
+    move->positionPath.path[1] = to;
+}
+
+void markMoveCapturesEmpty(Move *move) {
+    move->captureCollection.captures = NULL;
+    move->captureCollection.size = 0;
+    move->captureCollection.allocatedSize = 0;
+}
+
+void addMoveToPlayerMoves(Move move) {
+    playerMoveCollection.moves[playerMoveCollection.size++] = move;
 }

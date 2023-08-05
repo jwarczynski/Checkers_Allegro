@@ -7,27 +7,19 @@
 
 #include "types.h"
 
-bool checkMoveValidity(PlayerMoves playerChoice);
+// INTERFACE
+bool isMoveValid(Move move);
 
-bool checkQueenCaptureMoveValidity(PieceCaptureMoves queenCaptureMove);
-bool checkPawnCaptureMovesValidity(PieceCaptureMoves playerChoice);
-bool checkCaptureMovesValidity(PieceCaptureMoves playerChoice, PieceCaptureMoves *validMoves, int validMovesSize);
-
-bool checkPieceMoveValidity(PieceMoves playerChoice);
-
-bool validCaptureMovesContains(PieceCaptureMoves playerChoice, PieceCaptureMoves validCaptureMoves);
-bool areCaptureMovesEqual(Position to1, Position to2, CaptureCollection captureCollection1, CaptureCollection captureCollection2);
-bool arePointsEqual(Position point1, Position point2);
-bool arePointsDifferent(Position point1, Position point2);
+// IMPLEMENTATION
+bool areMovesEqual(Move move1, Move move2);
+bool arePositionPathsEqual(PositionPath positionPath1, PositionPath positionPath2);
 bool areCaptureCollectionsEqual(CaptureCollection captureCollection1, CaptureCollection captureCollection2);
 bool areCapturesEqual(Position *captures1, Position *captures2, int size);
+bool arePointsEqual(Position point1, Position point2);
+bool arePointsDifferent(Position point1, Position point2);
 
-bool validPieceMoveContains(PieceMoves playerChoice, PieceMoves validMove);
-
-int findMaxCapturesQueenMoveSize();
-int findMaxCapturesPawnMoveSize();
-int findMaxCapturesMoveSize(PieceCaptureMoves *validMoves, int validMovesSize);
-int findMaxCapturesQueenMoveSizeForPiece(PieceCaptureMoves captureMove);
+Position getNullPosition();
+bool isNotNullPosition(Position position);
 
 
 #endif //CHECKERS_MOVE_VALIDATOR_H

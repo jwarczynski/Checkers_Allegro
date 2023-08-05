@@ -8,75 +8,97 @@
 #include "moves/captures/capture.h"
 #include "moves/captures/queenCapture.h"
 #include "moves/captures/pawnCapture.h"
+#include "globals.h"
 
-extern PlayerMoves playerMoves;
-extern Piece board[BOARD_SIZE][BOARD_SIZE];
 
-bool addCaptureMoves(CaptureCollection *previousCaptures, Position position, Position direction, PieceType pieceType) {
+bool addCaptureMoves(Move *intermediateMoves, Position position, Position direction, PieceType pieceType) {
     switch (pieceType) {
         case PAWN:
-            return addPawnCaptureMoves(previousCaptures, position, direction);
+            return addPawnCaptureMoves(intermediateMoves, position, direction);
         case QUEEN:
-            return addQueenCaptureMoves(previousCaptures, position, direction);
+            return addQueenCaptureMoves(intermediateMoves, position, direction);
         default:
             printf("Invalid piece type");
             return false;
     }
 }
 
-bool addUpperLeftCaptureMoves(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
+bool addUpperLeftCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType) {
     Position direction = {1, -1};
-    return addCaptureMoves(previousCaptures, position, direction, pieceType);
+    return addCaptureMoves(intermediateMoves, position, direction, pieceType);
 }
 
-bool addUpperRightCaptureMoves(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
+bool addUpperRightCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType) {
     Position direction = {1, 1};
-    return addCaptureMoves(previousCaptures, position, direction, pieceType);
+    return addCaptureMoves(intermediateMoves, position, direction, pieceType);
 }
 
-bool addLowerLeftCaptureMoves(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
+bool addLowerLeftCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType) {
     Position direction = {-1, -1};
-    return addCaptureMoves(previousCaptures, position, direction, pieceType);
+    return addCaptureMoves(intermediateMoves, position, direction, pieceType);
 }
 
-bool addLowerRightCaptureMoves(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
+bool addLowerRightCaptureMoves(Move *intermediateMoves, Position position, PieceType pieceType) {
     Position direction = {-1, 1};
-    return addCaptureMoves(previousCaptures, position, direction, pieceType);
+    return addCaptureMoves(intermediateMoves, position, direction, pieceType);
 }
 
-bool tryAllDirectionsForCapture(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
+bool tryAllDirectionsForCapture(Move *intermediateMoves, Position position, PieceType pieceType) {
 // each function has to be executed even if the previous one returns true ,so it cannot be simplified with &&
-    bool upperLeftCapturePossible = addUpperLeftCaptureMoves(previousCaptures, position, pieceType);
-    bool upperRightCapturePossible = addUpperRightCaptureMoves(previousCaptures, position, pieceType);
-    bool lowerLeftCapturePossible = addLowerLeftCaptureMoves(previousCaptures, position, pieceType);
-    bool lowerRightCapturePossible = addLowerRightCaptureMoves(previousCaptures, position, pieceType);
+    bool upperLeftCapturePossible = addUpperLeftCaptureMoves(intermediateMoves, position, pieceType);
+    bool upperRightCapturePossible = addUpperRightCaptureMoves(intermediateMoves, position, pieceType);
+    bool lowerLeftCapturePossible = addLowerLeftCaptureMoves(intermediateMoves, position, pieceType);
+    bool lowerRightCapturePossible = addLowerRightCaptureMoves(intermediateMoves, position, pieceType);
 
     return !upperLeftCapturePossible && !upperRightCapturePossible &&
-           !lowerLeftCapturePossible &&!lowerRightCapturePossible;
+           !lowerLeftCapturePossible && !lowerRightCapturePossible;
 }
 
-bool addNextCaptureMoveIfPossible(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
-    bool noCapturesPossible = tryAllDirectionsForCapture(previousCaptures, position, pieceType);
+bool addNextCaptureMoveIfPossible(Move *intermediateMoves, Position position, PieceType pieceType) {
+    bool noCapturesPossible = tryAllDirectionsForCapture(intermediateMoves, position, pieceType);
 
     if (noCapturesPossible) {
-        savePositionAndCaptures(previousCaptures, position, pieceType);
-        return false;
+        savePositionAndCaptures(intermediateMoves);
+    } else {
+        freeMovesUtterly(intermediateMoves);
     }
     return true;
 }
 
-void markAllCaptureCollectionsAsNotInitialized(CaptureCollection *captureCollectionArray, int start, int end) {
-    for (int i = start; i < end; ++i) {
-        captureCollectionArray[i].captures = NULL;
-        captureCollectionArray[i].captureSize = 0;
-        captureCollectionArray[i].captureAllocatedSize = 0;
+void savePositionAndCaptures(Move *intermediateMoves) {
+    Move *move = &(playerMoveCollection.moves[playerMoveCollection.size]);
+    if (hasMoreOrEqualCapturesAsPreviousMove(intermediateMoves)) {
+        move->positionPath = intermediateMoves->positionPath;
+        move->captureCollection = intermediateMoves->captureCollection;
+
+        playerMoveCollection.size++;
+        return freeMoves(intermediateMoves);
     }
+    freeMovesUtterly(intermediateMoves);
+
 }
 
-void savePositionAndCaptures(CaptureCollection *previousCaptures, Position position, PieceType pieceType) {
-    if (pieceType == QUEEN) {
-        saveQueenPositionAndCaptures(previousCaptures, position);
-    } else {
-        savePawnPositionAndCapture(previousCaptures, position);
+bool hasMoreOrEqualCapturesAsPreviousMove(Move *intermediateMoves) {
+    if (playerMoveCollection.size == 0) {
+        return true;
     }
+    for (int i = 0; i < playerMoveCollection.size; ++i) {
+        Move *previousMove = &(playerMoveCollection.moves[i]);
+        if (intermediateMoves->captureCollection.size < previousMove->captureCollection.size) {
+            return false;
+        }
+    }
+    return true;
 }
+
+void freeMovesUtterly(Move *intermediateMoves) {
+    free(intermediateMoves->positionPath.path);
+    free(intermediateMoves->captureCollection.captures);
+    freeMoves(intermediateMoves);
+}
+
+void freeMoves(Move *intermediateMoves) {
+    free(intermediateMoves);
+    intermediateMoves = NULL;
+}
+
