@@ -9,11 +9,14 @@
 #include "types.h"
 
 // INTERFACE
-void handleIncomingEvents();
 void* eventHandler(void* arg);
+
 
 // implementation
 void handleEvent(ALLEGRO_EVENT event);
+
+
+void initUserMoveChoice();
 
 void handleMouseClick(ALLEGRO_EVENT event);
 void handleKeyDown(ALLEGRO_EVENT event);
