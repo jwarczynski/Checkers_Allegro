@@ -36,16 +36,12 @@ void initAllegroAddons() {
     ui.display = al_create_display(displayWidth, displayHeight);
     ui.buffer = al_create_bitmap(displayWidth, displayHeight);
     ui.queue = al_create_event_queue();
-    ui.timer = al_create_timer(1.0 / 60);
 }
 
 void registerEvents() {
     al_register_event_source(ui.queue, al_get_keyboard_event_source());
     al_register_event_source(ui.queue, al_get_display_event_source(ui.display));
-    al_register_event_source(ui.queue, al_get_timer_event_source(ui.timer));
     al_register_event_source(ui.queue, al_get_mouse_event_source());
-
-    al_start_timer(ui.timer);
 }
 
 void loadFonts(const char *path) {
@@ -56,7 +52,6 @@ void loadFonts(const char *path) {
 void destroyUI() {
     al_destroy_display(ui.display);
     al_uninstall_keyboard();
-    al_destroy_timer(ui.timer);
     al_destroy_bitmap(ui.buffer);
     al_destroy_font(ui.coordinateFont);
     al_destroy_font(ui.menuFont);
