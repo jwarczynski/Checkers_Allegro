@@ -219,3 +219,60 @@ void drawButton(float x, float y, float width, float height, const char *text, A
 void changeToDisplayCoordinates(int *row, int *col) {
     *row = BOARD_SIZE - *row - 1;
 }
+
+
+void drawBoardByDisplayPiecePositions(UISquare **piecePositions) {
+    al_set_target_bitmap(al_get_backbuffer(ui.display));
+
+    drawSquares();
+    drawPiecesByDisplayPiecePositions(piecePositions);
+
+    al_flip_display();
+}
+
+void drawPiecesByDisplayPiecePositions(UISquare **piecePositions) {
+    for (int row = 0; row < BOARD_SIZE; row++) {
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            drawPieceByDisplayPiecePosition(piecePositions[row][col]);
+        }
+    }
+}
+
+void drawPieceByDisplayPiecePosition(UISquare square) {
+    switch (square.piece) {
+        case WHITE_PAWN:
+            drawWhitePawnByDisplayPosition(square.x, square.y); break;
+        case BLACK_PAWN:
+            drawBlackPawnByDisplayPosition(square.x, square.y); break;
+        case WHITE_QUEEN:
+            drawWhiteQueenByDisplayPosition(square.x, square.y); break;
+        case BLACK_QUEEN:
+            drawBlackQueenByDisplayPosition(square.x, square.y); break;
+        case EMPTY: break;
+    }
+}
+
+void drawWhitePawnByDisplayPosition(float x, float y) {
+    drawPawnByDisplayPosition(x, y, WHITE_PAWN_COLOR);
+}
+
+void drawBlackPawnByDisplayPosition(float x, float y) {
+    drawPawnByDisplayPosition(x, y, BLACK_PAWN_COLOR);
+}
+
+void drawWhiteQueenByDisplayPosition(float x, float y) {
+    drawQueenByDisplayPosition(x, y, WHITE_PAWN_COLOR, WHITE_QUEEN_COLOR);
+}
+
+void drawBlackQueenByDisplayPosition(float x, float y) {
+    drawQueenByDisplayPosition(x, y, BLACK_PAWN_COLOR, BLACK_QUEEN_COLOR);
+}
+
+void drawPawnByDisplayPosition(float x, float y, ALLEGRO_COLOR color) {
+    al_draw_filled_circle(x, y, PAWN_RADIUS, color);
+}
+
+void drawQueenByDisplayPosition(float x, float y, ALLEGRO_COLOR pieceColor, ALLEGRO_COLOR outlineColor) {
+    al_draw_filled_circle(x, y, QUEEN_RADIUS, outlineColor);
+    al_draw_filled_circle(x, y, PAWN_RADIUS, pieceColor);
+}

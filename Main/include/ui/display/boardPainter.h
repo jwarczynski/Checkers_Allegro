@@ -7,6 +7,7 @@
 
 #include "allegro5/color.h"
 #include "allegro5/allegro_font.h"
+#include "types.h"
 
 // INTERFACE
 void drawInterface();
@@ -53,5 +54,16 @@ void drawMenuButton(float y, char *text);
 void drawButton(float x, float y, float width, float height, const char *text, ALLEGRO_FONT *font);
 
 void changeToDisplayCoordinates(int *row, int *col);
+
+void drawBoardByDisplayPiecePositions(UISquare **piecePositions);
+void drawPiecesByDisplayPiecePositions(UISquare **piecePositions);
+void drawPieceByDisplayPiecePosition(UISquare square);
+void drawWhitePawnByDisplayPosition(float x, float y);
+void drawBlackPawnByDisplayPosition(float x, float y);
+void drawWhiteQueenByDisplayPosition(float x, float y);
+void drawBlackQueenByDisplayPosition(float x, float y);
+void drawPawnByDisplayPosition(float x, float y, ALLEGRO_COLOR color);
+void drawQueenByDisplayPosition(float x, float y, ALLEGRO_COLOR pieceColor, ALLEGRO_COLOR outlineColor);
+
 
 #endif //CHECKERS_BOARD_PAINTER_H
