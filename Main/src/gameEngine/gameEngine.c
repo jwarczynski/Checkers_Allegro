@@ -14,6 +14,8 @@
 #include "gameEngine/moveValidator.h"
 #include "ui/display/boardPainter.h"
 #include "allegro5/threads.h"
+#include "ui/display/animations/moveAnimation.h"
+#include "moves/moveUtil.h"
 
 Player currentPlayer;
 PlayerMoveCollection playerMoveCollection;
@@ -72,7 +74,15 @@ void runTurn() {
         }
     }
 
-PlayerMoves getUserChoiceByInterface() {
+    animateMove(userMoveChoice);
+    destroyPlayerMoves();
+    unlockUserInputThread();
+}
+
+void waitForUserChoice() {
+    // handling user mouse click in another thread
+    // when double click this thread is awaken and userPathChoice is filled
+
     al_lock_mutex(clickMutex);
     al_wait_cond(clickCond, clickMutex);
 
@@ -85,8 +95,6 @@ PlayerMoves getUserChoiceByInterface() {
 void unlockUserInputThread() {
     al_unlock_mutex(clickMutex);
     al_signal_cond(moveExecutedCond);
-
-    return playerChoice;
 }
 
 void changePlayer() {
